@@ -213,12 +213,12 @@ Status LatController::Init(std::shared_ptr<DependencyInjector> injector,
   matrix_a_(0, 1) = 1;
   matrix_a_(1, 2) = (cf_+cr_)/mass_;
   matrix_a_(2, 3) = 1;
-  matrix_a_(3, 2) = (cf_*lf_-cr_lr_)/iz_;
+  matrix_a_(3, 2) = (cf_*lf_-cr_*lr_)/iz_;
 
   matrix_a_coeff_ = Matrix::Zero(matrix_size, matrix_size);
-  matrix_a_coeff_(1, 1) = (cf_+cr)/mass_;
-  matrix_a_coeff_(1, 3) = -(cf_*lf_-cr_lr_)/mass_;
-  matrix_a_coeff_(3, 1) = -(cf_*lf_-cr_lr_)/iz_;
+  matrix_a_coeff_(1, 1) = -(cf_+cr)/mass_;
+  matrix_a_coeff_(1, 3) = -(cf_*lf_-cr_*lr_)/mass_;
+  matrix_a_coeff_(3, 1) = -(cf_*lf_-cr_*lr_)/iz_;
   matrix_a_coeff_(3, 3) = -(lf_*lf_*cf_+lr_*lr_*cr_)/iz_;
 
   /*
@@ -483,11 +483,11 @@ Status LatController::ComputeControlCommand(
         matrix_q_(2, 2) * heading_err_interpolation_->Interpolate(
                               std::fabs(vehicle_state->linear_velocity()));
     common::math::SolveLQRProblem(matrix_adc_, matrix_bdc_, matrix_q_,
-                                  matrix_r_, lqr_eps, lqr_max_iteration,
+                                  matrix_r_, lqr_eps_, lqr_max_iteration_,
                                   &matrix_k_);
   } else {
     common::math::SolveLQRProblem(matrix_adc_, matrix_bdc_, matrix_q_,
-                                  matrix_r_, lqr_eps, lqr_max_iteration,
+                                  matrix_r_, lqr_eps_, lqr_max_iteration_,
                                   &matrix_k_);
   }
 
